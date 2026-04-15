@@ -27,10 +27,20 @@
         .checkbox-group { display: inline-flex; align-items: center; gap: 5px; margin: 0 10px; }
         .art6-sub { margin-left: 20px; margin-top: 3px; }
         .art78-compact { font-size: 11px; color: #000; margin: 3px 0; line-height: 1.15; }
+
+        /* --- FIRME --- */
         .signature-section { display: flex; justify-content: space-between; margin-top: 35px; gap: 30px; }
-        .sig-block { flex: 1; text-align: center; }
+        .sig-block { flex: 1; text-align: center; cursor: pointer; }
         .sig-label { font-weight: bold; display: block; margin-bottom: 4px; border-bottom: 1px solid #000; font-size: 12px; }
-        canvas { border: 1px dashed #bbb; background: #fff; width: 100%; height: 65px; border-radius: 4px; touch-action: none; }
+        .sig-preview { border: 1px dashed #bbb; background: #f9f9f9; width: 100%; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .sig-preview img { max-height: 100%; }
+
+        /* --- MODAL FIRMA --- */
+        #signature-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+        #modal-canvas { background: white; border-radius: 8px; cursor: crosshair; touch-action: none; width: 90%; max-width: 600px; height: 300px; }
+        .modal-btns { margin-top: 20px; display: flex; gap: 10px; }
+        .btn-modal { padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
+        #modal-title { color: white; font-size: 24px; margin-bottom: 10px; font-family: sans-serif; }
 
         /* --- HOME --- */
         #home-screen { text-align: center; padding: 50px 20px; background: white; }
@@ -58,12 +68,11 @@
         @media print {
             @page { size: A4; margin: 0; } 
             body { background: white; padding: 0; }
-            .no-print, .btn-clear { display: none !important; }
+            .no-print { display: none !important; }
             .screen { display: none !important; }
             .screen.active { display: block !important; box-shadow: none; width: 100% !important; margin: 0 !important; }
             input, textarea { border: none !important; border-bottom: 1px solid #000 !important; background: transparent !important; }
-            canvas { border: none !important; border-bottom: 1px solid #000 !important; height: 60px !important; }
-            .gray-box { background: #f2f2f2 !important; -webkit-print-color-adjust: exact; }
+            .sig-preview { border: none !important; border-bottom: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -72,6 +81,16 @@
     <div class="no-print">
         <button class="btn-menu" onclick="goHome()">🏠 HOME</button>
         <button class="btn-menu btn-print" onclick="window.print()">🖨 STAMPA PDF</button>
+    </div>
+
+    <div id="signature-modal">
+        <div id="modal-title">FIRMA</div>
+        <canvas id="modal-canvas" width="600" height="300"></canvas>
+        <div class="modal-btns">
+            <button class="btn-modal" style="background:#e74c3c; color:white;" onclick="clearModal()">CANCELLA</button>
+            <button class="btn-modal" style="background:#27ae60; color:white;" onclick="saveModal()">CONFERMA</button>
+            <button class="btn-modal" style="background:#95a5a6; color:white;" onclick="closeModal()">CHIUDI</button>
+        </div>
     </div>
 
     <div id="home-screen" class="screen active">
@@ -135,8 +154,14 @@
         <p class="art78-compact"><strong>Art. 8 —</strong> Garantiamo la piena osservanza di tutte le norme previste dalla Legge a protezione della Privacy, esplicitamente confermando la nostra attenta adesione al disposto del Regolamento Gdpr n.679/2016 e da quanto ne discende, ed in particolare da quanto contenuto negli articoli dal 13 al 22, e all'articolo 34. Concretamente, in qualsiasi momento, potrai rivolgerti al titolare del trattamento dei dati Alessandro Angelini, contattandolo all'indirizzo email info@photoangelini.it per qualsiasi informazione, correzione, variazione o cancellazione tu desideri sui dati che ti riguardano.</p>
         <p style="text-align:right; margin-top:12px;">Castellammare del Golfo lì, <input type="date" style="width:140px;"></p>
         <div class="signature-section">
-            <div class="sig-block"><span class="sig-label">I COMMITTENTI (Firma)</span><canvas id="sig-com"></canvas><button class="btn-clear" onclick="clearS('sig-com')">Cancella</button></div>
-            <div class="sig-block"><span class="sig-label">LA DITTA (Firma)</span><canvas id="sig-ditta"></canvas><button class="btn-clear" onclick="clearS('sig-ditta')">Cancella</button></div>
+            <div class="sig-block" onclick="openSignature('committenti')">
+                <span class="sig-label">I COMMITTENTI (Tocca per firmare)</span>
+                <div class="sig-preview" id="preview-committenti">Clicca per firmare 1 e 2</div>
+            </div>
+            <div class="sig-block" onclick="openSignature('ditta')">
+                <span class="sig-label">LA DITTA (Tocca per firmare)</span>
+                <div class="sig-preview" id="preview-ditta">Clicca per firmare</div>
+            </div>
         </div>
     </div>
 
@@ -150,7 +175,6 @@
         <div class="row-draft"><span class="label-draft">• ORARIO TESTIMONI, AMICI E PARENTI:</span><input type="text" class="input-draft time-box"></div>
         <div class="row-draft"><span class="label-draft">• ORARIO FOTO/VIDEO USCITA CASA SPOSO:</span><input type="text" class="input-draft time-box"></div>
         <span class="section-title">Note Sposo:</span><textarea placeholder="Annotazioni..."></textarea>
-
         <h2>SPOSA</h2>
         <div class="row-draft"><span class="label-draft">ORARIO ARRIVO FOTOGRAFO:</span><input type="text" class="input-draft time-box"></div>
         <div class="gray-box"><span class="section-title">Indicazioni & Consigli:</span> Farsi trovare in vestaglia con l'abito appeso e accessori pronti nella stanza dei genitori libera. <strong>Consiglio: Mangiare qualcosa prima di vestirsi.</strong></div>
@@ -159,7 +183,6 @@
         <div class="row-draft"><span class="label-draft">• ORARIO TESTIMONI, AMICI E PARENTI:</span><input type="text" class="input-draft time-box"></div>
         <div class="row-draft"><span class="label-draft">• ORARIO AUTO USCITA SPOSA:</span><input type="text" class="input-draft time-box"></div>
         <span class="section-title">Note Sposa:</span><textarea placeholder="Annotazioni..."></textarea>
-
         <h2>CHIESA / COMUNE</h2>
         <div class="gray-box">
             <span class="section-title">Indicazioni:</span>
@@ -174,7 +197,6 @@
             • Evitare di salutare tutti all'uscita per preservare il trucco.<br>
             • Scarpe di scorta comode (stessa altezza) e trucco labbra per ritocco.
         </div>
-
         <h2>SALA</h2>
         <div class="gray-box">
             • Prenotare solo 2 menù invece che 4 per la troupe, di cui 1 completo per celiaci e senza lattosio ed uno normale.<br>
@@ -212,28 +234,93 @@
                 container.appendChild(img);
             });
         }
-        function setupS(id) {
-            const canvas = document.getElementById(id);
-            const ctx = canvas.getContext('2d');
-            let drawing = false;
-            function getPos(e) {
-                const rect = canvas.getBoundingClientRect();
-                return { x: (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left, y: (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top };
-            }
-            function start(e) { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); }
-            function end() { drawing = false; }
-            function draw(e) {
-                if (!drawing) return;
-                const p = getPos(e);
-                ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
-                ctx.lineTo(p.x, p.y); ctx.stroke();
-                if (e.type.includes('touch')) e.preventDefault();
-            }
-            canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', end);
-            canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', end);
+
+        /* LOGICA FIRME MODALI */
+        let currentTarget = ""; 
+        let currentStep = 1; 
+        const canvas = document.getElementById('modal-canvas');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        function openSignature(target) {
+            currentTarget = target;
+            currentStep = 1;
+            document.getElementById('signature-modal').style.display = 'flex';
+            updateModalTitle();
+            clearModal();
         }
-        function clearS(id) { const c = document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); }
-        setupS('sig-com'); setupS('sig-ditta');
+
+        function updateModalTitle() {
+            const title = document.getElementById('modal-title');
+            if (currentTarget === 'committenti') {
+                title.innerText = `FIRMA COMMITTENTE ${currentStep}`;
+            } else {
+                title.innerText = "FIRMA DITTA";
+            }
+        }
+
+        function clearModal() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function closeModal() {
+            document.getElementById('signature-modal').style.display = 'none';
+        }
+
+        function saveModal() {
+            const dataUrl = canvas.toDataURL();
+            const preview = document.getElementById(`preview-${currentTarget}`);
+            
+            if (currentTarget === 'committenti') {
+                if (currentStep === 1) {
+                    // Salva temporaneamente la prima firma
+                    window.firstSig = dataUrl;
+                    currentStep = 2;
+                    updateModalTitle();
+                    clearModal();
+                } else {
+                    // Unisce le due firme nel preview
+                    preview.innerHTML = `<img src="${window.firstSig}" style="width:45%"><img src="${dataUrl}" style="width:45%">`;
+                    closeModal();
+                }
+            } else {
+                preview.innerHTML = `<img src="${dataUrl}" style="width:90%">`;
+                closeModal();
+            }
+        }
+
+        // Funzioni di disegno
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left,
+                y: (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top
+            };
+        }
+        function start(e) { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x * (canvas.width / rect().width), p.y * (canvas.height / rect().height)); }
+        function rect() { return canvas.getBoundingClientRect(); }
+        
+        canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x * (600 / rect().width), p.y * (300 / rect().height)); });
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+            const p = getPos(e);
+            ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
+            ctx.lineTo(p.x * (600 / rect().width), p.y * (300 / rect().height));
+            ctx.stroke();
+            e.preventDefault();
+        }, {passive: false});
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('touchstart', (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x * (600 / rect().width), p.y * (300 / rect().height)); e.preventDefault(); }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => {
+            if (!drawing) return;
+            const p = getPos(e);
+            ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
+            ctx.lineTo(p.x * (600 / rect().width), p.y * (300 / rect().height));
+            ctx.stroke();
+            e.preventDefault();
+        }, {passive: false});
+        canvas.addEventListener('touchend', () => drawing = false);
+
     </script>
 </body>
 </html>

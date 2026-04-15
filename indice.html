@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratto Photo Angelini</title>
+    <style>
+        body { font-family: "Times New Roman", Times, serif; background: #444; margin: 0; padding: 0; color: #000; }
+        .no-print { text-align: center; padding: 15px; background: #222; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #444; }
+        .btn-menu { padding: 10px 25px; font-size: 14px; cursor: pointer; background: #fff; border: 2px solid #222; border-radius: 8px; font-weight: bold; margin: 0 5px; }
+        .btn-print { background: #27ae60 !important; color: white !important; border: none !important; }
+
+        .screen { display: none; background: white; width: 95%; max-width: 800px; margin: 20px auto; box-shadow: 0 0 20px rgba(0,0,0,0.5); box-sizing: border-box; }
+        .active { display: block; }
+
+        /* --- HOME --- */
+        #home-screen { text-align: center; padding: 50px 20px; background: white; }
+        .logo-home { font-size: 45px; letter-spacing: 3px; margin-bottom: 10px; font-weight: bold; text-align: center; width: 100%; }
+        .subtitle-home { font-size: 18px; color: #666; margin-bottom: 50px; font-style: italic; text-align: center; width: 100%; }
+        .btn-large { width: 350px; padding: 20px; font-size: 18px; text-transform: uppercase; margin: 15px auto; display: block; cursor: pointer; border-radius: 10px; border: 2px solid #222; background: white; font-weight: bold; }
+
+        /* --- CONTRATTO (Tuo codice originale) --- */
+        #contratto { padding: 12mm 20mm; font-size: 14px; line-height: 1.25; }
+        #contratto p { margin: 4px 0; text-align: justify; }
+        .header-block { width: 100%; text-align: center; margin-bottom: 15px; }
+        .header-block h1 { font-size: 24px; margin: 0; letter-spacing: 1px; }
+        .header-block p { font-size: 13px; margin: 1px 0; font-weight: bold; }
+        .center-bold { text-align: center; font-weight: bold; margin: 8px 0; font-size: 15px; width: 100%; display: block; }
+        .row-container { display: flex; align-items: center; gap: 4px; width: 100%; margin-bottom: 3px; }
+        .flex-fill { flex-grow: 1; min-width: 30px; }
+        input[type="text"], input[type="date"], input[type="number"] { border: 1px solid #ccc; font-family: inherit; font-size: 13px; padding: 1px 4px; border-radius: 3px; background: #fdfdfd; }
+        .options-centered { text-align: center; margin: 5px 0; font-weight: bold; width: 100%; }
+        .checkbox-group { display: inline-flex; align-items: center; gap: 5px; margin: 0 10px; }
+        .art78-compact { font-size: 11px; color: #000; margin: 3px 0; line-height: 1.15; }
+        .signature-section { display: flex; justify-content: space-between; margin-top: 35px; gap: 30px; }
+        .sig-block { flex: 1; text-align: center; }
+        .sig-label { font-weight: bold; display: block; margin-bottom: 4px; border-bottom: 1px solid #000; font-size: 12px; }
+        canvas { border: 1px dashed #bbb; background: #fff; width: 100%; height: 65px; border-radius: 4px; touch-action: none; }
+
+        /* --- DRAFT (Tuo codice originale) --- */
+        #draft { padding: 10mm 15mm; }
+        #draft h1 { text-align: center; font-size: 20px; border-bottom: 1px solid #000; text-transform: uppercase; }
+        #draft h2 { background: #f2f2f2; padding: 3px 10px; font-size: 14px; border-left: 4px solid #222; margin: 10px 0 4px 0; }
+        .row-draft { display: flex; align-items: center; gap: 8px; margin: 3px 0; }
+        .label-draft { flex: 0 0 310px; font-weight: bold; font-size: 13px; }
+        .gray-box { background: #f9f9f9; border: 1px solid #eee; padding: 6px 10px; margin: 4px 0; font-size: 12.5px; border-radius: 4px; }
+        textarea { width: 100%; height: 30px; border: 1px solid #ccc; resize: none; }
+
+        /* --- LISTINO (Scroll Verticale) --- */
+        #listino { background: #1a1a1a; text-align: center; padding-bottom: 40px; }
+        .listino-scroll { display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 20px 0; }
+        .listino-scroll img { width: 95%; max-width: 800px; height: auto; border-radius: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+
+        @media print {
+            @page { size: A4; margin: 0; } 
+            .no-print, .btn-clear { display: none !important; }
+            .screen { display: none !important; }
+            .screen.active { display: block !important; box-shadow: none; width: 100% !important; margin: 0 !important; }
+            input, textarea { border: none !important; border-bottom: 1px solid #000 !important; }
+            canvas { border: none !important; border-bottom: 1px solid #000 !important; height: 60px !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print">
+        <button class="btn-menu" onclick="goHome()">🏠 HOME</button>
+        <button class="btn-menu btn-print" onclick="window.print()">🖨 STAMPA PDF</button>
+    </div>
+
+    <div id="home-screen" class="screen active">
+        <div class="logo-home">PHOTO ANGELINI</div>
+        <div class="subtitle-home">S.R.L. - Servizi Fotografici Professionali</div>
+        <button class="btn-large" onclick="showDoc('contratto')">📄 CONTRATTO MATRIMONIO</button>
+        <button class="btn-large" onclick="showDoc('draft')">📝 DRAFT MATRIMONIO</button>
+        <button class="btn-large" onclick="showDoc('listino')" style="border-color: #27ae60; color: #27ae60;">📖 SFOGLIA LISTINO</button>
+    </div>
+
+    <div id="contratto" class="screen">
+        <div class="header-block">
+            <h1>PHOTO ANGELINI SRL</h1>
+            <p>Via Segesta, 189 - 91014 Castellammare del Golfo</p>
+            <p>P.IVA: 02621630819 - Telefono/Fax: 0924 30662</p>
+        </div>
+        <p>Con la presente i committenti,</p>
+        <div class="row-container">
+            <span>sig.</span> <input type="text" style="width:200px;"> 
+            <span>in via</span> <input type="text" class="flex-fill"> 
+            <span>Tel.</span> <input type="text" style="width:130px;">
+        </div>
+        <div class="row-container">
+            <span>sig.ra</span> <input type="text" style="width:200px;"> 
+            <span>in via</span> <input type="text" class="flex-fill"> 
+            <span>Tel.</span> <input type="text" style="width:130px;">
+        </div>
+        <div class="center-bold">CONFERISCONO</div>
+        <p>alla ditta Photo Angelini s.r.l. il compito di realizzare un servizio di:</p>
+        <div class="options-centered">
+            <span class="checkbox-group"><input type="checkbox"> <strong>nozze;</strong></span>
+            <span class="checkbox-group"><input type="checkbox"> <strong>ritratto;</strong></span>
+            <span class="checkbox-group"><input type="checkbox"> <strong>altro;</strong></span>
+        </div>
+        <div class="row-container">
+            <span><strong>Art. 1 —</strong> Il servizio dovrà essere realizzato il giorno</span> 
+            <input type="date" style="width:140px;"> 
+            <span>alle ore</span> <input type="text" style="width:80px;">
+        </div>
+        <div class="row-container">
+            <span>nella Chiesa</span> <input type="text" style="width:200px;"> 
+            <span>in</span> <input type="text" class="flex-fill"> 
+            <span>sala</span> <input type="text" style="width:180px;">
+        </div>
+        <p><strong>Art. 6 — Pagamento:</strong></p>
+        <p>• € <input type="number" style="width:100px;"> al momento della firma;</p>
+        <p class="art78-compact"><strong>Art. 7 —</strong> Consenso uso immagini portfolio.</p>
+        <p class="art78-compact"><strong>Art. 8 —</strong> Privacy GDPR 679/2016.</p>
+        <div class="signature-section">
+            <div class="sig-block"><span class="sig-label">I COMMITTENTI</span><canvas id="sig-com"></canvas><button onclick="clearS('sig-com')">cancella</button></div>
+            <div class="sig-block"><span class="sig-label">LA DITTA</span><canvas id="sig-ditta"></canvas><button onclick="clearS('sig-ditta')">cancella</button></div>
+        </div>
+    </div>
+
+    <div id="draft" class="screen">
+        <h1>DRAFT MATRIMONIO</h1>
+        <h2>SPOSO</h2>
+        <div class="row-draft"><span class="label-draft">ORARIO ARRIVO FOTOGRAFO:</span><input type="text" style="width:80px;"></div>
+        <div class="gray-box">Farsi trovare in pantalone e camicia.</div>
+        <h2>SPOSA</h2>
+        <div class="row-draft"><span class="label-draft">ORARIO ARRIVO FOTOGRAFO:</span><input type="text" style="width:80px;"></div>
+        <div class="gray-box">Vestaglia e abito appeso.</div>
+    </div>
+
+    <div id="listino" class="screen">
+        <h2 style="color:white; padding-top:20px;">LISTINO PREZZI 2025</h2>
+        <div class="listino-scroll" id="scroll-gallery">
+            </div>
+    </div>
+
+    <script>
+        function showDoc(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+            if(id === 'listino') loadImages();
+        }
+        function goHome() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('home-screen').classList.add('active');
+        }
+        function loadImages() {
+            const container = document.getElementById('scroll-gallery');
+            if(container.innerHTML !== "") return;
+            const images = ["Copertina.jpg"];
+            for(let i=1; i<=17; i++) { if(i!==4) images.push(`Pagina (${i}).jpg`); }
+            images.forEach(imgName => {
+                const img = document.createElement('img');
+                img.src = imgName;
+                container.appendChild(img);
+            });
+        }
+        function setupS(id) {
+            const canvas = document.getElementById(id);
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                return { x: (e.clientX || e.touches[0].clientX) - rect.left, y: (e.clientY || e.touches[0].clientY) - rect.top };
+            }
+            function start(e) { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); }
+            function draw(e) { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); if(e.type.includes('touch')) e.preventDefault(); }
+            function end() { drawing = false; }
+            canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', end);
+            canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', end);
+        }
+        function clearS(id) { const c = document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); }
+        setupS('sig-com'); setupS('sig-ditta');
+    </script>
+</body>
+</html>

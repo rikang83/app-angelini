@@ -18,12 +18,9 @@
         /* --- STILE CONTRATTO --- */
         #contratto { padding: 8mm 15mm; font-size: 14px; line-height: 1.25; }
         #contratto p { margin: 4px 0; text-align: justify; }
-        
-        /* MODIFICA: Centratura assoluta intestazione contratto */
         #contratto .header-block { width: 100%; margin-bottom: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; }
         #contratto .header-block h1 { font-size: 24px; margin: 0; letter-spacing: 1px; text-align: center; width: 100%; }
         #contratto .header-block p { font-size: 13px; margin: 1px 0; font-weight: bold; text-align: center; width: 100%; }
-        
         .center-bold { text-align: center; font-weight: bold; margin: 10px 0; font-size: 15px; width: 100%; display: block; text-transform: uppercase; }
         .row-container { display: flex; align-items: center; gap: 4px; width: 100%; margin-bottom: 3px; }
         .flex-fill { flex-grow: 1; min-width: 30px; }
@@ -32,7 +29,7 @@
         .checkbox-group { display: inline-flex; align-items: center; gap: 5px; margin: 0 10px; }
         .art78-compact { font-size: 11px; margin: 3px 0; line-height: 1.15; }
 
-        /* --- STILE ALLEGATO MATRIMONIO --- */
+        /* --- STILE ALLEGATO --- */
         #allegato { padding: 12mm 18mm; font-size: 16px; }
         #allegato .header-block h1 { font-size: 28px; }
         .allegato-text-top { text-align: justify; margin-bottom: 22px; font-size: 16px; line-height: 1.5; }
@@ -40,9 +37,11 @@
         .price-table td { vertical-align: top; padding: 8px 0; }
         .td-check { width: 35px; }
         .td-price { width: 110px; text-align: right; font-weight: bold; white-space: nowrap; font-size: 17px; }
-        .total-box { margin-top: 25px; border: 2px solid #000; padding: 12px 20px; display: flex; justify-content: flex-end; align-items: center; gap: 15px; }
+        .total-container { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; margin-top: 25px; }
+        .total-box { border: 2px solid #000; padding: 12px 20px; display: flex; justify-content: flex-end; align-items: center; gap: 15px; width: fit-content; }
         .total-label { font-weight: bold; font-size: 20px; }
-        .total-input { font-size: 22px; font-weight: bold; width: 160px; text-align: center; border: 1px solid #000 !important; }
+        .total-input { font-size: 22px; font-weight: bold; width: 160px; text-align: center; border: 1px solid #000 !important; background: #eee; }
+        .discount-input { font-size: 22px; font-weight: bold; width: 160px; text-align: center; border: 1px solid #000 !important; color: #c0392b; }
         #allegato .center-bold { font-size: 17px; margin: 15px 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
         /* --- STILE DRAFT --- */
@@ -178,26 +177,37 @@
         </div>
         <div class="allegato-text-top">
             I prezzi degli album, delle stampe e delle materie prime delle aziende produttrici, possono subire piccole variazioni, nel corso del tempo.<br>
-            I prezzi dei nostri album sono già comprensivi di stampe analogiche, digitali impaginate o stampate su carte miste particolari, a seconda delle modalità che potrete scegliere in fase successiva al contratto, che servirà a bloccare la data come servizio fotografico e videografico.
+            I prezzi dei nostri album sono già comprensivi di stampe analogiche, digitali impaginate o stampate su carte miste particolari, a seconda delle modalità che potrete scegliere in fase successiva al contratto.
         </div>
         <div class="center-bold">Tipologia di servizi e album a cui sareste interessati:</div>
         <table class="price-table">
-            <tr><td class="td-check"><input type="checkbox"></td><td><strong>Servizio Essenziale</strong> con staff per Servizio foto (con tutti i files pronti da stampare) e servizio video (compreso montaggio finale da almeno 30 min.), consegnate su 3 pendrive</td><td class="td-price">€ 1850</td></tr>
-            <tr><td class="td-check"><input type="checkbox"></td><td><strong>Servizio Luxory</strong> con Staff più completo per Servizio foto TOP (con tutti i files pronti da stampare) e servizio video TOP (compreso montaggio finale da almeno 30 min.), consegnate su 3 pendrive</td><td class="td-price">€ 2100</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="1850"></td><td><strong>Servizio Essenziale</strong> con staff per Servizio foto (con tutti i files pronti da stampare) e servizio video (compreso montaggio finale da almeno 30 min.), consegnate su 3 pendrive</td><td class="td-price">€ 1850</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="2100"></td><td><strong>Servizio Luxory</strong> con Staff più completo per Servizio foto TOP (con tutti i files pronti da stampare) e servizio video TOP (compreso montaggio finale da almeno 30 min.), consegnate su 3 pendrive</td><td class="td-price">€ 2100</td></tr>
         </table>
         <div class="center-bold">SERVIZI AGGIUNTIVI</div>
         <table class="price-table">
-            <tr><td class="td-check"><input type="checkbox"></td><td>Servizio trailer, con montaggio in sala e service proiettore telo e computer</td><td class="td-price">€ 100</td></tr>
-            <tr><td class="td-check"><input type="checkbox"></td><td>Servizio drone</td><td class="td-price">€ 250</td></tr>
-            <tr><td class="td-check"><input type="checkbox"></td><td>Servizio PRE o POST wedding, in qualsiasi location, da stabilire assieme</td><td class="td-price">Su richiesta</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="100"></td><td>Servizio trailer, con montaggio in sala e service proiettore telo e computer</td><td class="td-price">€ 100</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="250"></td><td>Servizio drone</td><td class="td-price">€ 250</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="0"></td><td>Servizio PRE o POST wedding, in qualsiasi location, da stabilire assieme</td><td class="td-price">Su richiesta</td></tr>
         </table>
         <div class="center-bold">ALBUM & RICORDI</div>
         <table class="price-table">
-            <tr><td class="td-check"><input type="checkbox"></td><td>A- album grande artigianale, con n. 100 foto stampate all’interno</td><td class="td-price">€ 500</td></tr>
-            <tr><td class="td-check"><input type="checkbox"></td><td>B- album FOTOLIBRO medio, con circa 100 foto impaginate all’interno</td><td class="td-price">€ 600</td></tr>
-            <tr><td class="td-check"><input type="checkbox"></td><td>C- album FOTOLIBRO grande, con circa 140 foto impaginate all’interno, 2 album mini per genitori e 3 poster</td><td class="td-price">€ 900</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="500"></td><td>A- album grande artigianale, con n. 100 foto stampate all’interno</td><td class="td-price">€ 500</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="600"></td><td>B- album FOTOLIBRO medio, con circa 100 foto impaginate all’interno</td><td class="td-price">€ 600</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="900"></td><td>C- album FOTOLIBRO grande, con circa 140 foto impaginate all’interno, 2 album mini per genitori e 3 poster</td><td class="td-price">€ 900</td></tr>
+            <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="1100"></td><td>D- album fotolibro MISTO, con circa 140 foto impaginate all’interno, di cui 1 foto pittorica doppia, 2 album mini per genitori e 3 poster</td><td class="td-price">€ 1100</td></tr>
         </table>
-        <div class="total-box"><span class="total-label">TOTALE:</span><input type="text" class="total-input" placeholder="€"></div>
+
+        <div class="total-container">
+            <div class="total-box">
+                <span class="total-label">TOTALE:</span>
+                <input type="text" id="total-val" class="total-input" value="€ 0" readonly>
+            </div>
+            <div class="total-box">
+                <span class="total-label">TOTALE SCONTATO:</span>
+                <input type="text" class="discount-input" placeholder="€">
+            </div>
+        </div>
     </div>
 
     <div id="draft" class="screen">
@@ -261,6 +271,17 @@
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('home-screen').classList.add('active');
         }
+
+        // LOGICA CALCOLO TOTALE ALLEGATO
+        document.querySelectorAll('.price-check').forEach(check => {
+            check.addEventListener('change', () => {
+                let total = 0;
+                document.querySelectorAll('.price-check:checked').forEach(c => {
+                    total += parseInt(c.getAttribute('data-price'));
+                });
+                document.getElementById('total-val').value = "€ " + total;
+            });
+        });
 
         function generatePDF() {
             const activeScreen = document.querySelector('.screen.active');

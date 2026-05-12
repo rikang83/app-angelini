@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratto Photo Angelini</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+</head>
+<body>
+
+    <div class="no-print">
+        <button type="button" class="btn-menu" onclick="goHome()">🏠 HOME</button>
+        <button type="button" class="btn-menu btn-pdf" onclick="generatePDF()">💾 SALVA PDF</button>
+        <button type="button" class="btn-menu btn-print" onclick="printActive()">🖨 STAMPA PDF</button>
+        <button type="button" class="btn-menu btn-share" onclick="shareLink()">🔗 CONDIVIDI</button>
+        <button type="button" class="btn-menu btn-export" onclick="exportData()">📤 ESPORTA</button>
+        <button type="button" class="btn-menu btn-import" onclick="importData()">📥 IMPORTA</button>
+        <button type="button" class="btn-menu btn-reset" onclick="clearSavedData()">🗑 CANCELLA</button>
+    </div>
+
+    <div id="signature-modal">
+        <div id="modal-title" style="color:white; font-size:24px; margin-bottom:10px;">FIRMA</div>
+        <canvas id="modal-canvas" width="600" height="300"></canvas>
+        <div class="modal-btns">
+            <button type="button" class="btn-modal" style="background:#e74c3c; color:white;" onclick="clearModal()">CANCELLA</button>
+            <button type="button" class="btn-modal" style="background:#27ae60; color:white;" onclick="saveModal()">CONFERMA</button>
+            <button type="button" class="btn-modal" style="background:#95a5a6; color:white;" onclick="closeModal()">CHIUDI</button>
+        </div>
+    </div>
+
+    <div id="home-screen" class="screen active">
+        <div class="logo-home">PHOTO ANGELINI</div>
+        <div class="subtitle-home">S.R.L. - Servizi Fotografici Professionali</div>
+        <button type="button" class="btn-large" onclick="showDoc('contratto')">📄 CONTRATTO + ALLEGATO MATRIMONIO</button>
+        <button type="button" class="btn-large" onclick="showDoc('draft')">📝 DRAFT MATRIMONIO</button>
+        <button type="button" class="btn-large" onclick="showDoc('listino')" style="border-color: #27ae60; color: #27ae60;">📖 SFOGLIA LISTINO</button>
+    </div>
+
+    <div id="contratto" class="screen">
+
+        <div class="page" id="page-contratto">
+            <div class="header-block">
+                <h1>PHOTO ANGELINI SRL</h1>
+                <p>Via Segesta, 189 - 91014 Castellammare del Golfo</p>
+                <p>P.IVA: 02621630819 - Telefono/Fax: 0924 30662</p>
+            </div>
+            <p>Con la presente i committenti,</p>
+            <div class="row-container">
+                <span>sig.</span> <input type="text" style="width:200px;"> <span>in via</span> <input type="text" class="flex-fill"> <span>Tel.</span> <input type="text" style="width:130px;"> <span>e</span>
+            </div>
+            <div class="row-container">
+                <span>sig.ra</span> <input type="text" style="width:200px;"> <span>in via</span> <input type="text" class="flex-fill"> <span>Tel.</span> <input type="text" style="width:130px;">
+            </div>
+            <div class="center-bold">CONFERISCONO</div>
+            <p>alla ditta <strong>Photo Angelini s.r.l.</strong> sita in Castellammare del Golfo, via Segesta, 189, il compito di realizzare un servizio di:</p>
+            <div class="options-centered">
+                <span class="checkbox-group"><input type="checkbox"> <strong>nozze;</strong></span>
+                <span class="checkbox-group"><input type="checkbox"> <strong>ritratto;</strong></span>
+                <span class="checkbox-group"><input type="checkbox"> <strong>altro;</strong></span>
+            </div>
+            <p>per avere una documentazione fotografica creativa ed interpretativa della cerimonia e della festa, affidandosi alla sua capacità creativa e compositiva, che hanno già avuto modo di constatare ed apprezzare nei suoi lavori precedenti.</p>
+            <div class="row-container">
+                <span><strong>Art. 1 —</strong> Il servizio dovrà essere realizzato il giorno</span> <input type="date" style="width:140px;"> <span>alle ore</span> <input type="text" style="width:80px;">
+            </div>
+            <div class="row-container">
+                <span>nella Chiesa</span> <input type="text" style="width:200px;"> <span>in</span> <input type="text" class="flex-fill"> <span>sala</span> <input type="text" style="width:180px;">
+            </div>
+            <p><strong>Art. 2 —</strong> La descrizione del servizio per quantità e qualità di stampe ed altri aspetti come stabilito dalle parti:</p>
+            <div class="options-centered">
+                <span class="checkbox-group"><input type="checkbox"> <strong>sarà concordato in seguito;</strong></span>
+                <span class="checkbox-group"><input type="checkbox"> <strong>come in allegato;</strong></span>
+            </div>
+            <p><strong>Art. 3 —</strong> Per legge, i negativi, le diapositive, i files di acquisizione e/o gli originali di altra natura sono di comproprietà del fotografo autore delle riprese, che li conserva presso lo studio. Il fotografo si impegna a custodirli con la massima cura per anni 10, nel pieno rispetto delle norme sulla privacy, e ad eseguire le eventuali richieste di ristampe ai normali prezzi di listino.</p>
+            <p><strong>Art. 4 —</strong> Eventuali variazioni dell'opera dovranno essere concordate tra le parti, a meno che non dipendano da problemi di carattere tecnico.</p>
+            <p><strong>Art. 5 —</strong> L’accettazione dell'opera da parte del committente libera il fotografo da qualunque responsabilità inerente l'opera stessa.</p>
+            <p><strong>Art. 6 —</strong> Il pagamento del compenso complessivo viene suddiviso in tre momenti:</p>
+            <div style="margin-left: 20px;">
+                <p>• € <input type="number" style="width:100px;"> al momento della firma di questo accordo, come caparra confirmatoria;</p>
+                <p>• il 50% circa della somma rimanente, 15 giorni prima dell'esecuzione delle riprese, a titolo di anticipo spese;</p>
+                <p>• l'importo restante pattuito a saldo della prestazione, deve essere dato alla consegna del lavoro ultimato, che deve essere ritirato entro e non oltre 12 mesi.</p>
+            </div>
+            <p class="art78-compact"><strong>Art. 7 —</strong> Gli sposi acconsentono che la ditta Photo Angelini s.r.l., utilizzi una parte delle immagini che ritraggano loro e la loro cerimonia, come esempio della produzione fotografica dello studio e che quindi tali immagini possano essere esposte al pubblico, ad esempio mediante affissione su manifesti pubblicitari e/o promozionali della ditta stessa, su sito web dello studio, per concorsi, ed ogni altro modo lecito.</p>
+            <p class="art78-compact"><strong>Art. 8 —</strong> Garantiamo la piena osservanza di tutte le norme previste dalla Legge a protezione della Privacy, esplicitamente confermando la nostra attenta adesione al disposto del Regolamento Gdpr n.679/2016 e da quanto ne discende, ed in particolare da quanto contenuto negli articoli dal 13 al 22, e all'articolo 34. Concretamente, in qualsiasi momento, potrai rivolgerti al titolare del trattamento dei dati Alessandro Angelini, contattandolo all'indirizzo email info@photoangelini.it per qualsiasi informazione, correzione, variazione o cancellazione tu desideri sui dati che ti riguardano.</p>
+            <p style="text-align:right; margin-top:8px; font-size:11px; color:#888;"><em>(le firme sono nell'allegato, pagina seguente)</em></p>
+        </div>
+
+        <div class="page" id="page-allegato">
+            <div class="header-block">
+                <h1>ALLEGATO MATRIMONIO</h1>
+                <p>Photo Angelini s.r.l.</p>
+            </div>
+            <div class="allegato-text-top">
+                I prezzi degli album, delle stampe e delle materie prime delle aziende produttrici, possono subire piccole variazioni, nel corso del tempo.<br>
+                I prezzi dei nostri album sono già comprensivi di stampe analogiche, digitali impaginate o stampate su carte miste particolari, a seconda delle modalità che potrete scegliere in fase successiva al contratto.
+            </div>
+            <div class="center-bold">Tipologia di servizi e album a cui sareste interessati:</div>
+            <table class="price-table">
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="1850"></td><td><strong>Servizio Essenziale</strong> con staff per Servizio foto (con tutti i files pronti da stampare) e servizio video (compreso montaggio finale da almeno 30 min.), consegnate su 3 pendrive</td><td class="td-price">€ 1850</td></tr>
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="2100"></td><td><strong>Servizio Luxory</strong> con Staff più completo per Servizio foto TOP (con tutti i files pronti da stampare) e servizio video TOP (compreso montaggio finale da almeno 30 min.), consegnate su 3 pendrive</td><td class="td-price">€ 2100</td></tr>
+            </table>
+            <div class="center-bold">SERVIZI AGGIUNTIVI</div>
+            <table class="price-table">
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="100"></td><td>Servizio trailer, con montaggio in sala e service proiettore telo e computer</td><td class="td-price">€ 100</td></tr>
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="250"></td><td>Servizio drone</td><td class="td-price">€ 250</td></tr>
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="0"></td><td>Servizio PRE o POST wedding, in qualsiasi location, da stabilire assieme</td><td class="td-price">Su richiesta</td></tr>
+            </table>
+            <div class="center-bold">ALBUM &amp; RICORDI</div>
+            <table class="price-table">
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="500"></td><td>A- album grande artigianale, con n. 100 foto stampate all’interno</td><td class="td-price">€ 500</td></tr>
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="600"></td><td>B- album FOTOLIBRO medio, con circa 100 foto impaginate all’interno</td><td class="td-price">€ 600</td></tr>
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="900"></td><td>C- album FOTOLIBRO grande, con circa 140 foto impaginate all’interno, 2 album mini per genitori e 3 poster</td><td class="td-price">€ 900</td></tr>
+                <tr><td class="td-check"><input type="checkbox" class="price-check" data-price="1100"></td><td>D- album fotolibro MISTO, con circa 140 foto impaginate all’interno, di cui 1 foto pittorica doppia, 2 album mini per genitori e 3 poster</td><td class="td-price">€ 1100</td></tr>
+            </table>
+
+            <div class="total-container">
+                <div class="total-box">
+                    <span class="total-label">TOTALE:</span>
+                    <input type="text" id="total-val" class="total-input" value="€ 0" readonly>
+                </div>
+                <div class="total-box">
+                    <span class="total-label">TOTALE SCONTATO:</span>
+                    <input type="text" class="discount-input" placeholder="€">
+                </div>
+            </div>
+
+            <p style="text-align:right; margin-top:15px;">Castellammare del Golfo lì, <input type="date" style="width:140px;"></p>
+            <div class="signature-section">
+                <div class="sig-block" onclick="openSignature('committenti')">
+                    <span class="sig-label">I COMMITTENTI</span>
+                    <div class="sig-preview" id="preview-committenti">Clicca per firmare 1 e 2</div>
+                </div>
+                <div class="sig-block" onclick="openSignature('ditta')">
+                    <span class="sig-label">LA DITTA</span>
+                    <div class="sig-preview" id="preview-ditta">Clicca per firmare</div>
+                </div>
+            </div>
+            <p style="text-align:center; margin-top:8px; font-size:10.5px; color:#666;"><em>Le firme apposte valgono per entrambe le pagine del documento (contratto + allegato).</em></p>
+        </div>
+
+    </div>
+
+    <div id="draft" class="screen">
+        <div class="page">
+            <h1>DRAFT MATRIMONIO</h1>
+            <h2>SPOSO</h2>
+            <div class="row-draft"><span class="label-draft">ORARIO ARRIVO FOTOGRAFO:</span><input type="text" class="input-draft time-box"></div>
+            <div class="gray-box"><span class="section-title">Indicazioni:</span> Farsi trovare in pantalone e camicia con tutto il resto del proprio outfit (scarpe, cravatta, gemelli, orologio, profumo e giacca) nella stanza da letto dei genitori, già libera da altri oggetti che non siano dello sposo.</div>
+            <div class="row-draft"><span class="label-draft">• ORARIO GENITORI E FRATELLI NON SPOSATI:</span><input type="text" class="input-draft time-box"></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO PAGGETTI E DAMIGELLE (non obbligatori):</span><input type="text" class="input-draft time-box"></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO TESTIMONI, AMICI E PARENTI:</span><input type="text" class="input-draft time-box"></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO FOTO/VIDEO USCITA CASA SPOSO:</span><input type="text" class="input-draft time-box"></div>
+            <span class="section-title">Note Sposo:</span><textarea placeholder="Annotazioni..."></textarea>
+
+            <h2>SPOSA</h2>
+            <div class="row-draft"><span class="label-draft">ORARIO ARRIVO FOTOGRAFO:</span><input type="text" class="input-draft time-box"></div>
+            <div class="gray-box"><span class="section-title">Indicazioni &amp; Consigli:</span> Farsi trovare in vestaglia con l'abito appeso e accessori (scarpe, orecchini, profumo, bouquet) pronti nella stanza dei genitori libera. <strong>Consiglio: Mangiare qualcosa prima di vestirsi.</strong></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO GENITORI E FRATELLI NON SPOSATI:</span><input type="text" class="input-draft time-box"></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO PAGGETTI E DAMIGELLE:</span><input type="text" class="input-draft time-box"></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO TESTIMONI, AMICI E PARENTI:</span><input type="text" class="input-draft time-box"></div>
+            <div class="row-draft"><span class="label-draft">• ORARIO AUTO USCITA SPOSA:</span><input type="text" class="input-draft time-box"></div>
+            <span class="section-title">Note Sposa:</span><textarea placeholder="Annotazioni..."></textarea>
+
+            <h2>CHIESA / COMUNE</h2>
+            <div class="gray-box">
+                <span class="section-title">Indicazioni:</span>
+                • L'auto con la sposa dovrà fermarsi nei pressi/vicinanze della Chiesa/Comune, aspettando il segnale del fotografo che le dirà di avvicinarsi; nel frattempo lo sposo insieme a chi lo accompagna farà l'ingresso nella Chiesa/Comune aspettando l'arrivo della sposa all'altare.<br>
+                • Per l'ingresso e l'uscita, la donna starà alla sinistra dell'uomo.<br>
+                • Per l'incontro, lo sposo accoglie la sposa togliendo il velo (se c'è) e baciandola sulla fronte, poi gli sposi insieme a chi li accompagna si saluteranno e si accomoderanno rispettivamente ai propri posti.
+            </div>
+            <div class="gray-box" style="border-style: dashed;">
+                <span class="section-title">Consigli:</span>
+                • Evitare di guardare sempre eventuale libretto messa.<br>
+                • A fine messa evitare le foto con tutti (solo testimoni e famiglia intima).<br>
+                • Evitare di salutare tutti all'uscita per preservare il trucco.<br>
+                • Scarpe di scorta comode (stessa altezza) e trucco labbra per ritocco.
+            </div>
+
+            <h2>SALA</h2>
+            <div class="gray-box">
+                • Prenotare solo 2 menù invece che 4 per la troupe, di cui 1 completo per celiaci e senza lattosio ed uno normale.<br>
+                • Richiedere al direttore una postazione con 2 posti ed un tavolo vuoto per eventuale proiezione.<br>
+                • Eventuali dediche, scherzi, flashmob ect. vanno comunicati alla troupe fotografica.
+            </div>
+            <div style="margin-top: 12px; text-align: center; border-top: 1px solid #000; padding-top: 8px;">
+                <p><strong>Importante. Eventuali sorprese quali addio al celibato/nubilato, serenate e quant’altro, non vanno organizzate la sera prima.</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="listino" class="screen">
+        <div id="gallery-container" class="listino-scroll"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

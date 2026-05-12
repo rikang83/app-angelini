@@ -1,0 +1,404 @@
+// === NAVIGAZIONE SCHERMATE ===
+function showDoc(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+    if (id === 'listino') loadGallery();
+}
+
+function goHome() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('home-screen').classList.add('active');
+}
+
+// === LOGICA CALCOLO TOTALE ALLEGATO ===
+function updateTotal() {
+    let total = 0;
+    document.querySelectorAll('.price-check:checked').forEach(c => {
+        total += parseInt(c.getAttribute('data-price'), 10) || 0;
+    });
+    document.getElementById('total-val').value = "€ " + total;
+}
+document.querySelectorAll('.price-check').forEach(check => {
+    check.addEventListener('change', updateTotal);
+});
+
+// === SALVATAGGIO AUTOMATICO IN localStorage ===
+const STORAGE_KEY = 'photoangelini_form_data_v1';
+
+function getFormElements() {
+    return Array.from(document.querySelectorAll(
+        '#contratto input, #contratto textarea, ' +
+        '#allegato input, #allegato textarea, ' +
+        '#draft input, #draft textarea'
+    )).filter(el => el.id !== 'total-val');
+}
+
+// === SERIALIZZAZIONE STATO ===
+function buildStateObject() {
+    const data = { v: 1, fields: [], signatures: {} };
+    getFormElements().forEach((el, idx) => {
+        if (el.type === 'checkbox') {
+            data.fields[idx] = el.checked;
+        } else {
+            data.fields[idx] = el.value;
+        }
+    });
+    data.signatures.committenti = document.getElementById('preview-committenti').innerHTML;
+    data.signatures.ditta = document.getElementById('preview-ditta').innerHTML;
+    return data;
+}
+
+function applyStateObject(data) {
+    if (!data || !Array.isArray(data.fields)) return false;
+    getFormElements().forEach((el, idx) => {
+        const val = data.fields[idx];
+        if (val === undefined) return;
+        if (el.type === 'checkbox') {
+            el.checked = !!val;
+        } else {
+            el.value = val;
+        }
+    });
+    if (data.signatures) {
+        const c = document.getElementById('preview-committenti');
+        const d = document.getElementById('preview-ditta');
+        if (data.signatures.committenti && data.signatures.committenti.includes('<img')) {
+            c.innerHTML = data.signatures.committenti;
+        }
+        if (data.signatures.ditta && data.signatures.ditta.includes('<img')) {
+            d.innerHTML = data.signatures.ditta;
+        }
+    }
+    updateTotal();
+    return true;
+}
+
+function saveState() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(buildStateObject()));
+    } catch (e) {
+        console.warn('Impossibile salvare i dati:', e);
+    }
+}
+
+function loadState() {
+    let raw;
+    try {
+        raw = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+        return;
+    }
+    if (!raw) return;
+    try {
+        applyStateObject(JSON.parse(raw));
+    } catch (e) { /* ignora */ }
+}
+
+function clearSavedData() {
+    if (!confirm('Sei sicuro di voler cancellare tutti i dati inseriti? Questa azione non può essere annullata.')) return;
+    try {
+        localStorage.removeItem(STORAGE_KEY);
+    } catch (e) { /* noop */ }
+    // Reset campi
+    getFormElements().forEach(el => {
+        if (el.type === 'checkbox') el.checked = false;
+        else el.value = '';
+    });
+    document.getElementById('preview-committenti').innerHTML = 'Clicca per firmare 1 e 2';
+    document.getElementById('preview-ditta').innerHTML = 'Clicca per firmare';
+    updateTotal();
+}
+
+// Debounce per non salvare ad ogni tasto
+let saveTimer = null;
+function scheduleSave() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveState, 400);
+}
+
+// Collegamento eventi di modifica a tutti i campi + firme
+document.addEventListener('DOMContentLoaded', () => {
+    getFormElements().forEach(el => {
+        el.addEventListener('input', scheduleSave);
+        el.addEventListener('change', scheduleSave);
+    });
+    // Priorità: dati nel link > dati in localStorage
+    const loadedFromUrl = loadFromUrl();
+    if (!loadedFromUrl) loadState();
+});
+
+// === ESPORTA DATI SU FILE JSON ===
+function exportData() {
+    const data = buildStateObject();
+    const stamp = new Date().toISOString().slice(0, 10);
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `contratto-photoangelini-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// === IMPORTA DATI DA FILE JSON ===
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (!applyStateObject(data)) throw new Error('Formato non valido');
+                saveState();
+                alert('✓ Dati importati correttamente!');
+            } catch (err) {
+                alert('Errore nel caricamento del file: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    };
+    input.click();
+}
+
+// === CONDIVIDI VIA LINK (URL con dati compressi nell'hash) ===
+function shareLink() {
+    if (typeof LZString === 'undefined') {
+        alert('Libreria di compressione non caricata. Riprova fra qualche secondo.');
+        return;
+    }
+    const data = buildStateObject();
+    const json = JSON.stringify(data);
+    const compressed = LZString.compressToEncodedURIComponent(json);
+    const baseUrl = window.location.origin + window.location.pathname;
+    const fullUrl = `${baseUrl}#d=${compressed}`;
+
+    // Calcola dimensione per avvisare se troppo lungo
+    const sizeKB = (fullUrl.length / 1024).toFixed(1);
+
+    const msg = `Ciao! Apri questo link per visualizzare e firmare il contratto Photo Angelini:\n\n${fullUrl}`;
+
+    const copyAndShare = () => {
+        navigator.clipboard.writeText(fullUrl).then(() => {
+            const wantWa = confirm(`✓ Link copiato negli appunti (${sizeKB} KB).\n\nVuoi aprire WhatsApp per inviarlo subito?`);
+            if (wantWa) {
+                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+            }
+        }).catch(() => {
+            // Fallback se clipboard non disponibile
+            prompt('Copia questo link e invialo al cliente:', fullUrl);
+        });
+    };
+
+    if (fullUrl.length > 8000) {
+        const ok = confirm(`Attenzione: il link è lungo ${sizeKB} KB. WhatsApp potrebbe troncarlo.\nConsigliato usare "ESPORTA" e inviare il file .json invece.\n\nProcedere comunque con il link?`);
+        if (!ok) return;
+    }
+    copyAndShare();
+}
+
+// === CARICA DATI DA URL HASH ===
+function loadFromUrl() {
+    const hash = window.location.hash;
+    if (!hash || !hash.startsWith('#d=')) return false;
+    if (typeof LZString === 'undefined') return false;
+    const compressed = hash.substring(3);
+    try {
+        const json = LZString.decompressFromEncodedURIComponent(compressed);
+        if (!json) return false;
+        const data = JSON.parse(json);
+
+        // Se c'è già qualcosa in localStorage, chiedi conferma
+        let hasLocal = false;
+        try { hasLocal = !!localStorage.getItem(STORAGE_KEY); } catch (e) { /* noop */ }
+        if (hasLocal) {
+            const ok = confirm('Hai ricevuto un contratto via link.\nQuesti dati sostituiranno quelli attualmente salvati sul dispositivo.\nContinuare?');
+            if (!ok) return false;
+        }
+        if (!applyStateObject(data)) return false;
+        saveState();
+        // Pulisci l'hash dall'URL per non ricaricare al refresh
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+        // Vai automaticamente al contratto
+        setTimeout(() => {
+            showDoc('contratto');
+            alert('✓ Contratto caricato dal link. Compila il riquadro firme e poi premi "CONDIVIDI" per rimandarlo.');
+        }, 200);
+        return true;
+    } catch (e) {
+        console.warn('Link non valido:', e);
+        return false;
+    }
+}
+
+// === STAMPA / PDF ===
+function isPrintableScreen() {
+    const activeScreen = document.querySelector('.screen.active');
+    if (!activeScreen) return false;
+    if (activeScreen.id === 'home-screen' || activeScreen.id === 'listino') {
+        alert("Seleziona Contratto, Allegato o Draft per generare il PDF");
+        return false;
+    }
+    return true;
+}
+
+function printActive() {
+    if (!isPrintableScreen()) return;
+    window.print();
+}
+
+function generatePDF() {
+    if (!isPrintableScreen()) return;
+    const activeScreen = document.querySelector('.screen.active');
+    const opt = {
+        margin: [5, 5, 5, 5],
+        filename: activeScreen.id.toUpperCase() + '_Photo_Angelini.pdf',
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(activeScreen).set(opt).save();
+}
+
+// === GALLERIA LISTINO ===
+function loadGallery() {
+    const container = document.getElementById('gallery-container');
+    if (container.innerHTML !== "") return;
+    const images = ["Copertina.jpg"];
+    for (let i = 1; i <= 17; i++) {
+        if (i !== 4) images.push(`Pagina (${i}).jpg`);
+    }
+    images.forEach(name => {
+        const img = document.createElement('img');
+        img.src = encodeURI(name);
+        img.alt = name;
+        img.loading = "lazy";
+        img.onerror = () => { img.style.display = 'none'; };
+        container.appendChild(img);
+    });
+}
+
+// === FIRMA SU CANVAS ===
+let currentTarget = "";
+let currentStep = 1;
+const canvas = document.getElementById('modal-canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+let lastPoint = null;
+
+// Configurazione tratto firma
+function configureStroke() {
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#000';
+}
+
+function openSignature(target) {
+    currentTarget = target;
+    currentStep = 1;
+    window.firstSig = null; // reset firma 1 ad ogni apertura
+    document.getElementById('signature-modal').style.display = 'flex';
+    updateModalTitle();
+    clearModal();
+}
+
+function updateModalTitle() {
+    const title = document.getElementById('modal-title');
+    title.innerText = currentTarget === 'committenti' ? `FIRMA COMMITTENTE ${currentStep}` : "FIRMA DITTA";
+}
+
+function clearModal() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    configureStroke();
+}
+
+function closeModal() {
+    document.getElementById('signature-modal').style.display = 'none';
+    drawing = false;
+    lastPoint = null;
+}
+
+function saveModal() {
+    const dataUrl = canvas.toDataURL();
+    const preview = document.getElementById(`preview-${currentTarget}`);
+    if (currentTarget === 'committenti') {
+        if (currentStep === 1) {
+            window.firstSig = dataUrl;
+            currentStep = 2;
+            updateModalTitle();
+            clearModal();
+        } else {
+            preview.innerHTML = `<img src="${window.firstSig}" style="width:45%"><img src="${dataUrl}" style="width:45%">`;
+            closeModal();
+            scheduleSave();
+        }
+    } else {
+        preview.innerHTML = `<img src="${dataUrl}" style="width:90%">`;
+        closeModal();
+        scheduleSave();
+    }
+}
+
+// Calcolo coordinate corrette per mouse e touch
+function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX, clientY;
+    if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+function startDraw(e) {
+    drawing = true;
+    configureStroke();
+    const p = getPos(e);
+    lastPoint = p;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+}
+
+function moveDraw(e) {
+    if (!drawing) return;
+    const p = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastPoint.x, lastPoint.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    lastPoint = p;
+}
+
+function endDraw() {
+    drawing = false;
+    lastPoint = null;
+}
+
+// Eventi mouse
+canvas.addEventListener('mousedown', startDraw);
+canvas.addEventListener('mousemove', moveDraw);
+canvas.addEventListener('mouseup', endDraw);
+canvas.addEventListener('mouseleave', endDraw);
+
+// Eventi touch
+canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startDraw(e); }, { passive: false });
+canvas.addEventListener('touchmove', (e) => { e.preventDefault(); moveDraw(e); }, { passive: false });
+canvas.addEventListener('touchend', endDraw);
+canvas.addEventListener('touchcancel', endDraw);

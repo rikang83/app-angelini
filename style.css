@@ -1,0 +1,172 @@
+/* === STILE GENERALE === */
+body { font-family: 'Tinos', 'Times New Roman', Times, serif; background: #444; margin: 0; padding: 0; color: #000; }
+.no-print { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding: 12px; background: #222; position: sticky; top: 0; z-index: 1000; border-bottom: 2px solid #444; }
+.btn-menu { padding: 8px 18px; font-size: 13px; cursor: pointer; background: #fff; border: 2px solid #222; border-radius: 8px; font-weight: bold; margin: 2px; }
+.btn-print { background: #27ae60 !important; color: white !important; border: none !important; }
+.btn-pdf { background: #2980b9 !important; color: white !important; border: none !important; }
+.btn-share { background: #8e44ad !important; color: white !important; border: none !important; }
+.btn-export { background: #16a085 !important; color: white !important; border: none !important; }
+.btn-import { background: #d35400 !important; color: white !important; border: none !important; }
+.btn-reset { background: #c0392b !important; color: white !important; border: none !important; }
+
+.screen { display: none; max-width: 100%; margin: 20px auto; box-sizing: border-box; }
+.active { display: block; }
+
+/* .page = singolo foglio A4 (210x297mm). Un documento può contenere più pagine */
+.page {
+    background: white;
+    width: 210mm;
+    height: 297mm;
+    margin: 20px auto;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-sizing: border-box;
+    overflow: hidden;
+    page-break-after: always;
+}
+.page:last-child { page-break-after: auto; }
+
+/* Listino e Home non sono A4 */
+#listino, #home-screen { height: auto !important; overflow: visible !important; }
+
+/* Modalità PDF: nasconde sfondi e bordi grigi inutili */
+.pdf-mode input[type="text"],
+.pdf-mode input[type="date"],
+.pdf-mode input[type="number"],
+.pdf-mode textarea {
+    background: white !important;
+    border: 1px solid #aaa !important;
+}
+.pdf-mode .total-input { background: white !important; }
+.pdf-mode .sig-preview { border: none !important; background: white !important; }
+.pdf-mode .page { box-shadow: none !important; margin: 0 !important; }
+
+/* --- STILE CONTRATTO --- */
+#page-contratto { padding: 8mm 14mm; font-size: 13px; line-height: 1.28; }
+#page-contratto p { margin: 3px 0; text-align: justify; }
+#page-contratto .header-block { width: 100%; margin-bottom: 10px; text-align: center; }
+#page-contratto .header-block h1 { font-size: 22px; margin: 0 0 3px 0; letter-spacing: 1px; text-align: center; }
+#page-contratto .header-block p { font-size: 12.5px; margin: 1px 0; font-weight: bold; text-align: center !important; }
+.center-bold { text-align: center; font-weight: bold; margin: 7px 0; font-size: 15px; display: block; text-transform: uppercase; }
+.row-container { display: flex; align-items: center; gap: 5px; width: 100%; margin-bottom: 4px; flex-wrap: wrap; }
+.flex-fill { flex-grow: 1; min-width: 60px; }
+input[type="text"], input[type="date"], input[type="number"] { border: 1px solid #ccc; font-family: inherit; font-size: 13px; padding: 2px 5px; border-radius: 3px; background: #fdfdfd; }
+.options-centered { text-align: center; margin: 5px 0; font-weight: bold; }
+.checkbox-group { display: inline-flex; align-items: center; gap: 5px; margin: 0 10px; font-size: 13px; }
+.art78-compact { font-size: 11px; margin: 3px 0; line-height: 1.2; }
+
+/* --- STILE ALLEGATO --- */
+#page-allegato { padding: 10mm 14mm; font-size: 13px; line-height: 1.28; }
+#page-allegato .header-block { text-align: center; margin-bottom: 10px; }
+#page-allegato .header-block h1 { font-size: 22px; margin: 0 0 3px 0; letter-spacing: 1px; }
+#page-allegato .header-block p { font-size: 12.5px; margin: 1px 0; font-weight: bold; }
+.allegato-text-top { text-align: justify; margin-bottom: 12px; font-size: 13px; line-height: 1.35; }
+.price-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+.price-table td { vertical-align: top; padding: 5px 0; font-size: 13px; line-height: 1.3; }
+.td-check { width: 30px; }
+.td-price { width: 100px; text-align: right; font-weight: bold; white-space: nowrap; font-size: 14px; }
+.total-container { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin-top: 15px; }
+.total-box { border: 2px solid #000; padding: 8px 16px; display: flex; justify-content: flex-end; align-items: center; gap: 12px; width: fit-content; }
+.total-label { font-weight: bold; font-size: 16px; }
+.total-input { font-size: 18px; font-weight: bold; width: 140px; text-align: center; border: 1px solid #000 !important; background: #eee; }
+.discount-input { font-size: 18px; font-weight: bold; width: 140px; text-align: center; border: 1px solid #000 !important; color: #c0392b; }
+#page-allegato .center-bold { font-size: 14px; margin: 10px 0 5px 0; border-bottom: 1px solid #ddd; padding-bottom: 3px; }
+
+/* --- STILE DRAFT --- */
+#draft .page { padding: 7mm 13mm; font-size: 11px; line-height: 1.2; }
+#draft h1 { text-align: center; font-size: 17px; margin: 0 0 5px 0; border-bottom: 1px solid #000; text-transform: uppercase; }
+#draft h2 { background: #f2f2f2; padding: 2px 8px; font-size: 12px; border-left: 4px solid #222; margin: 6px 0 3px 0; text-transform: uppercase; }
+.row-draft { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+.label-draft { flex: 0 0 290px; font-weight: bold; font-size: 11px; }
+.input-draft { flex-grow: 1; border: 1px solid #ccc; padding: 1px 4px; border-radius: 3px; font-size: 11px; }
+.time-box { width: 65px; text-align: center; }
+.gray-box { background: #f9f9f9; border: 1px solid #eee; padding: 4px 8px; margin: 3px 0; font-size: 10.5px; border-radius: 3px; line-height: 1.32; }
+.section-title { font-weight: bold; text-decoration: underline; display: block; margin-bottom: 2px; }
+textarea { width: 100%; height: 24px; border: 1px solid #ccc; border-radius: 3px; padding: 3px; font-family: inherit; font-size: 10.5px; resize: none; margin-top: 2px; }
+
+/* --- STILE LISTINO --- */
+#listino { background: #333; padding: 10px; max-width: 900px; min-height: auto; }
+.listino-scroll { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; }
+.listino-scroll img { max-width: 100%; height: auto; display: block; box-shadow: 0 0 15px rgba(0,0,0,0.5); border-radius: 4px; }
+
+/* --- FIRME --- */
+.signature-section { display: flex; justify-content: space-between; margin-top: 12px; gap: 25px; }
+.sig-block { flex: 1; text-align: center; cursor: pointer; }
+.sig-label { font-weight: bold; display: block; margin-bottom: 3px; border-bottom: 1px solid #000; font-size: 11px; }
+.sig-preview { border: 1px dashed #bbb; background: #f9f9f9; width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; overflow: hidden; font-size: 10.5px; color: #888; }
+.sig-preview img { max-height: 100%; }
+
+/* --- HOME --- */
+#home-screen { text-align: center; padding: 50px 20px; background: white; min-height: auto; }
+.logo-home { font-size: 45px; letter-spacing: 3px; margin-bottom: 10px; font-weight: bold; }
+.subtitle-home { font-size: 18px; color: #666; margin-bottom: 50px; font-style: italic; }
+.btn-large { width: 350px; padding: 20px; font-size: 18px; text-transform: uppercase; margin: 15px auto; display: block; cursor: pointer; border-radius: 10px; border: 2px solid #222; background: white; font-weight: bold; }
+
+/* --- MODALE FIRMA --- */
+#signature-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; flex-direction: column; align-items: center; justify-content: center; }
+#modal-canvas { background: white; border-radius: 8px; cursor: crosshair; touch-action: none; width: 90%; max-width: 600px; height: 300px; }
+.modal-btns { margin-top: 20px; display: flex; gap: 10px; }
+.btn-modal { padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
+
+/* --- STAMPA --- */
+@media print {
+    @page { size: A4; margin: 0; }
+    body { background: white; }
+    .no-print { display: none !important; }
+    .screen { display: none !important; }
+    .screen.active {
+        display: block !important;
+        box-shadow: none !important;
+        width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 !important;
+        page-break-after: avoid;
+    }
+    #contratto, #allegato, #draft {
+        page-break-inside: avoid;
+        page-break-after: avoid;
+    }
+    input, textarea { background: white !important; border: 1px solid #aaa !important; }
+}
+
+/* --- RESPONSIVE SU TABLET / SMARTPHONE --- */
+/* Su schermi piccoli il foglio A4 fisso diventa flessibile (occupa tutto il viewport
+   con margini interni adeguati). Le proporzioni A4 vengono ripristinate solo durante
+   la generazione PDF tramite la classe .pdf-mode applicata al body. */
+@media (max-width: 850px) {
+    .page {
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        margin: 10px 0 !important;
+        padding: 12mm 8mm !important;
+    }
+    #page-contratto { padding: 10mm 7mm !important; }
+    #page-allegato { padding: 10mm 7mm !important; }
+    #draft .page { padding: 10mm 7mm !important; }
+    .no-print { padding: 8px 4px; gap: 4px; }
+    .btn-menu { padding: 7px 12px; font-size: 12px; }
+    .logo-home { font-size: 32px; }
+    .subtitle-home { font-size: 15px; margin-bottom: 30px; }
+    .btn-large { width: 90%; max-width: 350px; font-size: 16px; padding: 16px; }
+    #modal-canvas { width: 96%; height: 240px; }
+    /* Migliora leggibilità dei campi input su mobile */
+    input[type="text"], input[type="date"], input[type="number"] { font-size: 14px !important; }
+    .row-container { flex-wrap: wrap; }
+    .label-draft { flex: 1 1 100%; }
+    .row-draft { flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+    #modal-canvas { height: 200px; }
+    .btn-modal { padding: 12px 16px; font-size: 14px; }
+}
+
+/* MODALITÀ PDF: forza sempre dimensioni A4 fisse, indipendentemente dal viewport */
+.pdf-mode .page {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 8mm 14mm !important;
+}
+.pdf-mode #page-contratto { padding: 8mm 14mm !important; }
+.pdf-mode #page-allegato { padding: 10mm 14mm !important; }
+.pdf-mode #draft .page { padding: 7mm 13mm !important; }

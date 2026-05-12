@@ -168,6 +168,9 @@ function importData() {
 }
 
 // === CONDIVIDI VIA LINK (URL con dati compressi nell'hash) ===
+// URL pubblico dell'app — usato come fallback se l'app è aperta da file://
+const PUBLIC_APP_URL = 'https://rikang83.github.io/app-angelini/';
+
 function shareLink() {
     if (typeof LZString === 'undefined') {
         alert('Libreria di compressione non caricata. Riprova fra qualche secondo.');
@@ -176,11 +179,22 @@ function shareLink() {
     const data = buildStateObject();
     const json = JSON.stringify(data);
     const compressed = LZString.compressToEncodedURIComponent(json);
-    const baseUrl = window.location.origin + window.location.pathname;
-    const fullUrl = `${baseUrl}#d=${compressed}`;
 
-    // Calcola dimensione per avvisare se troppo lungo
+    // Se l'app è aperta da file locale (file://), il link non sarebbe cliccabile.
+    // In quel caso uso l'URL pubblico GitHub Pages come base.
+    let baseUrl;
+    let isLocal = window.location.protocol === 'file:';
+    if (isLocal) {
+        baseUrl = PUBLIC_APP_URL;
+    } else {
+        baseUrl = window.location.origin + window.location.pathname;
+    }
+    const fullUrl = `${baseUrl}#d=${compressed}`;
     const sizeKB = (fullUrl.length / 1024).toFixed(1);
+
+    if (isLocal) {
+        alert('⚠️ Stai usando l\'app in locale (sul tuo PC).\nIl link che invierai punterà al sito online:\n' + PUBLIC_APP_URL + '\n\nPer comodità, apri sempre l\'app da quel link.');
+    }
 
     const msg = `Ciao! Apri questo link per visualizzare e firmare il contratto Photo Angelini:\n\n${fullUrl}`;
 

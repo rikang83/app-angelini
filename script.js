@@ -210,8 +210,8 @@ function shareLink() {
         });
     };
 
-    if (fullUrl.length > 8000) {
-        const ok = confirm(`Attenzione: il link è lungo ${sizeKB} KB. WhatsApp potrebbe troncarlo.\nConsigliato usare "ESPORTA" e inviare il file .json invece.\n\nProcedere comunque con il link?`);
+    if (fullUrl.length > 60000) {
+        const ok = confirm(`Attenzione: il link è davvero lungo (${sizeKB} KB) e WhatsApp potrebbe troncarlo.\nConsigliato usare "ESPORTA" e inviare il file .json invece.\n\nProcedere comunque con il link?`);
         if (!ok) return;
     }
     copyAndShare();
@@ -262,18 +262,45 @@ function isPrintableScreen() {
     return true;
 }
 
+// === FORZA VALORI INPUT IN STAMPA/PDF ===
+// Bug noto: browser (specialmente Safari mobile) non includono i valori dei <input>
+// in window.print() o html2canvas. Iniettiamo i valori come attributi prima.
+function snapshotInputValuesIntoDom(root) {
+    (root || document).querySelectorAll('input, textarea').forEach(input => {
+        if (input.type === 'checkbox' || input.type === 'radio') {
+            if (input.checked) {
+                input.setAttribute('checked', 'checked');
+            } else {
+                input.removeAttribute('checked');
+            }
+        } else if (input.tagName === 'TEXTAREA') {
+            input.textContent = input.value || '';
+        } else {
+            input.setAttribute('value', input.value || '');
+        }
+    });
+}
+
+window.addEventListener('beforeprint', () => snapshotInputValuesIntoDom(document));
+
 function printActive() {
     if (!isPrintableScreen()) return;
+    snapshotInputValuesIntoDom(document);
     window.print();
 }
 
 function generatePDF() {
     if (!isPrintableScreen()) return;
     const activeScreen = document.querySelector('.screen.active');
+    snapshotInputValuesIntoDom(document);
     const opt = {
         margin: [5, 5, 5, 5],
         filename: activeScreen.id.toUpperCase() + '_Photo_Angelini.pdf',
-        html2canvas: { scale: 2, useCORS: true },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            onclone: (clonedDoc) => snapshotInputValuesIntoDom(clonedDoc)
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().from(activeScreen).set(opt).save();
